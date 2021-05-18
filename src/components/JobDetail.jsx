@@ -7,5 +7,14 @@ import {
 } from '@chakra-ui/react';
 
 export default function JobDetail(props) {
-  return <Box></Box>;
+  const singleJob = props.jobsData.find(
+    job => job.id === props.match.params.jobID
+  );
+  return (
+    <Box>
+      <Heading>{singleJob.title}</Heading>
+      <Heading>{singleJob.location}</Heading>
+      <Heading>{singleJob.url}</Heading>
+    </Box>
+  );
 }

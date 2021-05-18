@@ -12,6 +12,7 @@ import { Logo } from './Logo';
 import Home from './components/Home';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import JobDetail from './components/JobDetail';
+import { useState, useEffect } from 'react';
 
 function App() {
   const [position, setPosition] = useState('');
@@ -50,8 +51,37 @@ function App() {
     <ChakraProvider theme={theme}>
       <Box textAlign="center" fontSize="xl">
         <Router>
-          <Route path="/" exact component={Home} />
-          <Route path="/job/:jobID" exact component={JobDetail} />
+          <Route
+            exact
+            path="/"
+            render={props => (
+              <Home
+                {...props}
+                position={position}
+                location={location}
+                setPosition={setPosition}
+                setLocation={setLocation}
+                isLoading={isLoading}
+                setLoading={setLoading}
+                isFullTimeChecked={isFullTimeChecked}
+                setFullTimeCheck={setFullTimeCheck}
+                fetchData={fetchData}
+                jobsData={jobsData}
+                updateJobsData={updateJobsData}
+              />
+            )}
+          />
+          <Route
+            exact
+            path="/job/:jobID"
+            render={props => (
+              <JobDetail
+                {...props}
+                jobsData={jobsData}
+                updateJobsData={updateJobsData}
+              />
+            )}
+          />
         </Router>
       </Box>
     </ChakraProvider>

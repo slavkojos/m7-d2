@@ -2,8 +2,6 @@ import React from 'react';
 import {
   ChakraProvider,
   Box,
-  Text,
-  Link,
   VStack,
   Code,
   Grid,
@@ -11,29 +9,50 @@ import {
 } from '@chakra-ui/react';
 import { ColorModeSwitcher } from './ColorModeSwitcher';
 import { Logo } from './Logo';
+import Home from './components/Home';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import JobDetail from './components/JobDetail';
 
 function App() {
+  const [position, setPosition] = useState('');
+  const [location, setLocation] = useState('');
+  const [jobsData, updateJobsData] = useState([]);
+  const [isFullTimeChecked, setFullTimeCheck] = useState(false);
+  const [isLoading, setLoading] = useState(false);
+
+  async function showSearchResults() {
+    console.log(position);
+    console.log(location);
+    console.log(isFullTimeChecked);
+    setLoading(true);
+    let url = '';
+    if (isFullTimeChecked) {
+      url = `https://striveschool-api.herokuapp.com/api/jobs?description=${position}&full_time=true&location=${location}`;
+    } else {
+      url = `https://striveschool-api.herokuapp.com/api/jobs?description=${position}&location=${location}`;
+    }
+    const response = await fetch(url);
+    if (response.ok) {
+      const data = await response.json();
+      setLoading(false);
+      console.log(data);
+      return data;
+    }
+  }
+
+  async function fetchData() {
+    if (location !== '' && position !== '') {
+      updateJobsData(await showSearchResults());
+    }
+  }
+
   return (
     <ChakraProvider theme={theme}>
       <Box textAlign="center" fontSize="xl">
-        <Grid minH="100vh" p={3}>
-          <ColorModeSwitcher justifySelf="flex-end" />
-          <VStack spacing={8}>
-            <Logo h="40vmin" pointerEvents="none" />
-            <Text>
-              Edit <Code fontSize="xl">src/App.js</Code> and save to reload.
-            </Text>
-            <Link
-              color="teal.500"
-              href="https://chakra-ui.com"
-              fontSize="2xl"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learn Chakra
-            </Link>
-          </VStack>
-        </Grid>
+        <Router>
+          <Route path="/" exact component={Home} />
+          <Route path="/job/:jobID" exact component={JobDetail} />
+        </Router>
       </Box>
     </ChakraProvider>
   );
